@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Wealth Queen Archetype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-deep: #2a1a47;
+    --lavender: #b9a3d6;
+    --lavender-soft: #e7dcf2;
+    --pearl: #f6f1fa;
+    --gold: #d8b865;
+    --gold-soft: #ecd9a6;
+    --ink: #f6f1fa;
+    --ink-warm: #efe7f6;
+    --shadow: rgba(20, 10, 35, 0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Jost', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 50% 0%, #56397e 0%, rgba(86,57,126,0) 55%),
+      radial-gradient(circle at 15% 85%, #3a2560 0%, rgba(58,37,96,0) 50%),
+      linear-gradient(170deg, #2a1a47 0%, #1d1233 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 28px 18px 60px;
+    line-height: 1.6;
+  }
+  /* soft background image layer behind everything, only shows on result */
+  .bg-image {
+    position: fixed;
+    inset: 0;
+    background-image: url("images/background.png");
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-image.show { opacity: 0.55; }
+  /* a soft wash over the bg so text stays readable */
+  .bg-wash {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(42,26,71,0.35) 0%, rgba(42,26,71,0.55) 60%, rgba(29,18,51,0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-wash.show { opacity: 1; }
+
+  .stage { width: 100%; max-width: 620px; margin: 0 auto; position: relative; z-index: 1; }
+  .stage.wide { max-width: 960px; }
+
+  .eyebrow {
+    font-family: 'Jost', sans-serif; font-weight: 400; letter-spacing: 0.34em;
+    text-transform: uppercase; font-size: 0.7rem; color: var(--gold); text-align: center;
+  }
+  .rule { width: 54px; height: 1px; margin: 18px auto; background: linear-gradient(90deg, rgba(216,184,101,0) 0%, var(--gold) 50%, rgba(216,184,101,0) 100%); position: relative; }
+  .rule::after { content: "\2727"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 0.8rem; }
+
+  h1.display { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.08; text-align: center; color: var(--pearl); font-size: 2.5rem; }
+  .sub { text-align: center; color: var(--lavender); font-weight: 300; font-size: 1.02rem; max-width: 460px; margin: 0 auto; }
+
+  .card {
+    background: rgba(38,24,62,0.62);
+    border: 1px solid rgba(216,184,101,0.24);
+    border-radius: 18px;
+    padding: 34px 30px;
+    box-shadow: 0 18px 50px var(--shadow);
+    backdrop-filter: blur(6px);
+  }
+  .card.result-card { padding: 44px 46px; }
+
+  .btn {
+    display: inline-block; font-family: 'Jost', sans-serif; font-weight: 400; letter-spacing: 0.06em;
+    font-size: 0.98rem; color: #2a1a47; background: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 100%);
+    border: none; border-radius: 40px; padding: 15px 38px; cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease; box-shadow: 0 8px 22px rgba(216,184,101,0.28);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(216,184,101,0.4); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--lavender); border: 1px solid rgba(185,163,214,0.4); box-shadow: none; }
+  .btn-ghost:hover { color: var(--pearl); border-color: var(--lavender); box-shadow: none; }
+  .btn-row { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+
+  #intro { text-align: center; }
+  #intro .crown { font-size: 2.4rem; color: var(--gold); margin-bottom: 6px; }
+  #intro .lead { margin: 22px auto 30px; }
+
+  .field { margin-bottom: 26px; }
+  .field label { display: block; font-family: 'Jost', sans-serif; letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.72rem; color: var(--gold); margin-bottom: 12px; }
+  .opt-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .opt-grid.profiles { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .chip {
+    font-family: 'Jost', sans-serif; font-weight: 400; font-size: 0.92rem; color: var(--lavender-soft);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(185,163,214,0.3); border-radius: 30px;
+    padding: 11px 16px; cursor: pointer; text-align: center; transition: all 0.14s ease; flex: 1 1 auto;
+  }
+  .opt-grid:not(.profiles) .chip { min-width: 130px; }
+  .chip:hover { border-color: var(--gold); color: var(--pearl); }
+  .chip.selected { background: linear-gradient(135deg, rgba(216,184,101,0.92) 0%, rgba(236,217,166,0.92) 100%); color: #2a1a47; border-color: var(--gold); font-weight: 500; }
+  .helper { margin-top: 16px; text-align: center; font-size: 0.9rem; color: var(--lavender); font-weight: 300; }
+  .helper a { color: var(--gold-soft); text-decoration: none; border-bottom: 1px solid rgba(236,217,166,0.45); }
+  .helper a:hover { color: var(--gold); }
+  .helper-hint { font-size: 0.82rem; color: rgba(185,163,214,0.75); margin-top: 6px; text-align: center; }
+
+  .progress-wrap { margin-bottom: 26px; }
+  .progress-meta { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lavender); margin-bottom: 10px; }
+  .progress-track { height: 3px; background: rgba(185,163,214,0.18); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold-soft), var(--gold)); transition: width 0.35s ease; }
+
+  .q-text { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.7rem; color: var(--pearl); line-height: 1.22; margin-bottom: 26px; text-align: center; }
+  .answers { display: flex; flex-direction: column; gap: 12px; }
+  .answer {
+    font-family: 'Jost', sans-serif; font-weight: 300; font-size: 1rem; color: var(--lavender-soft);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(185,163,214,0.28); border-radius: 14px;
+    padding: 16px 20px; cursor: pointer; text-align: left; transition: all 0.14s ease; line-height: 1.4;
+  }
+  .answer:hover { border-color: var(--gold); color: var(--pearl); background: rgba(216,184,101,0.08); transform: translateX(3px); }
+  .nav-back { margin-top: 22px; text-align: center; }
+  .nav-back button { background: none; border: none; color: var(--lavender); font-family: 'Jost', sans-serif; font-size: 0.86rem; letter-spacing: 0.08em; cursor: pointer; opacity: 0.7; }
+  .nav-back button:hover { opacity: 1; color: var(--pearl); }
+
+  #result .eyebrow { margin-bottom: 8px; }
+  .result-name {
+    font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 3.1rem;
+    text-align: center; line-height: 1.04; margin-bottom: 6px;
+    background: linear-gradient(180deg, #cdb6e6 0%, #ffffff 70%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: #e7dcf2;
+  }
+  .result-tag { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400; font-size: 1.34rem; color: var(--gold-soft); text-align: center; margin-bottom: 8px; }
+  /* result sidebar layout */
+  .result-layout { display: flex; gap: 36px; align-items: flex-start; margin-top: 32px; }
+  .result-nav { flex: 0 0 264px; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 24px; }
+  .nav-label { font-family: 'Jost', sans-serif; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.68rem; color: var(--lavender); opacity: 0.8; margin: 4px 0 8px 14px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; width: 100%; white-space: nowrap;
+    font-family: 'Jost', sans-serif; font-weight: 400; font-size: 1.02rem; color: var(--lavender-soft);
+    background: transparent; border: none; border-left: 3px solid transparent;
+    border-radius: 0 10px 10px 0; padding: 13px 16px; cursor: pointer; text-align: left;
+    transition: all 0.15s ease; line-height: 1.3;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--pearl); }
+  .nav-item.active {
+    background: rgba(216,184,101,0.12); color: var(--pearl); font-weight: 500;
+    border-left: 3px solid var(--gold);
+  }
+  .nav-item .nav-dot { color: var(--gold); font-size: 0.9rem; margin-left: auto; opacity: 0; transition: opacity 0.15s ease; }
+  .nav-item.active .nav-dot { opacity: 1; }
+
+  .result-content {
+    flex: 1 1 auto; min-width: 0;
+  }
+  .result-img-wrap { margin: 0 auto; max-width: 380px; }
+  .result-img { width: 100%; display: block; border-radius: 16px; box-shadow: 0 0 60px rgba(216,184,101,0.35), 0 18px 50px rgba(20,10,35,0.5); }
+  .img-fallback { width: 100%; aspect-ratio: 1024 / 1536; border-radius: 16px; border: 1px dashed rgba(216,184,101,0.45); background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; color: var(--lavender-soft); font-weight: 300; font-size: 0.92rem; box-shadow: 0 0 50px rgba(216,184,101,0.18); }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade 0.35s ease; }
+  /* reading panels get the white sheet; the card panel stays free */
+  .panel.reading-panel.active {
+    background: #fbf8fc;
+    border: 1px solid rgba(216,184,101,0.3);
+    border-radius: 16px;
+    padding: 32px 34px;
+    box-shadow: 0 14px 40px rgba(20,10,35,0.35);
+  }
+  .panel-head { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 1.8rem; color: #3a2560; margin-bottom: 18px; text-align: left; }
+  .reading { max-width: 620px; }
+  .reading p { margin-bottom: 20px; font-weight: 400; color: #2c2336; font-size: 1.06rem; line-height: 1.74; }
+  .reading p:last-child { margin-bottom: 0; }
+
+  .share-note { margin: 34px auto 0; max-width: 520px; padding: 18px 22px; border-radius: 14px; background: rgba(216,184,101,0.1); border: 1px solid rgba(216,184,101,0.26); text-align: center; font-weight: 300; color: var(--ink-warm); font-size: 0.98rem; }
+  .sig { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.12rem; color: var(--lavender); margin-top: 28px; text-align: center; }
+  .result-foot { text-align: center; margin-top: 30px; }
+
+  .fade { animation: fade 0.45s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .hidden { display: none !important; }
+
+  @media (max-width: 680px) {
+    h1.display { font-size: 2rem; }
+    .result-name { font-size: 2.3rem; }
+    .q-text { font-size: 1.4rem; }
+    .opt-grid.profiles { grid-template-columns: repeat(3, 1fr); }
+    .card { padding: 28px 20px; }
+    .card.result-card { padding: 30px 22px; }
+    .reading p { font-size: 1.02rem; }
+    body { padding: 18px 12px 50px; }
+    /* sidebar collapses to a horizontal row on top */
+    .result-layout { flex-direction: column; gap: 22px; }
+    .result-nav { flex: 1 1 auto; position: static; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+    .nav-label { display: none; }
+    .nav-item {
+      flex: 1 1 auto; justify-content: center; text-align: center; font-size: 0.86rem;
+      border-left: none; border: 1px solid rgba(185,163,214,0.3); border-radius: 30px; padding: 11px 12px;
+    }
+    .nav-item.active { border-left: none; border: 1px solid var(--gold); background: rgba(216,184,101,0.16); }
+    .nav-item .nav-dot { display: none; }
+    .panel-head { text-align: center; }
+    .panel.reading-panel.active { padding: 24px 20px; }
+    .result-img-wrap { margin: 0 auto; }
+    .reading { max-width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade { animation: none; }
+    .answer:hover { transform: none; }
+    .btn:hover { transform: none; }
+    .bg-image, .bg-wash { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-image" id="bgImage"></div>
+<div class="bg-wash" id="bgWash"></div>
+<div class="stage" id="stage">
+
+  <section id="intro" class="card fade">
+    <div class="crown">&#9819;</div>
+    <p class="eyebrow">The Embody Wealth Inner Circle</p>
+    <div class="rule"></div>
+    <h1 class="display">Your Wealth Queen Archetype</h1>
+    <p class="sub lead">Every woman carries a wealth essence. A way money is built to move toward her. This is where you find yours. Answer honestly, bring your Human Design, and meet the Queen you already are.</p>
+    <button class="btn" id="startBtn">Begin</button>
+  </section>
+
+  <section id="hd" class="card hidden">
+    <p class="eyebrow">First, your design</p>
+    <div class="rule"></div>
+    <div class="field">
+      <label>Your Human Design Type</label>
+      <div class="opt-grid" id="typeGrid"></div>
+    </div>
+    <div class="field">
+      <label>Your Profile</label>
+      <div class="opt-grid profiles" id="profileGrid"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="hdNext" disabled>Continue</button>
+    </div>
+    <p class="helper">Don't know your Human Design yet? <a href="https://www.jovianarchive.com/get_your_chart" target="_blank" rel="noopener">Get your free chart here.</a></p>
+    <p class="helper-hint">It takes two minutes. You'll need your birth date, exact time, and city. Your Type and Profile are right at the top of the chart.</p>
+  </section>
+
+  <section id="quiz" class="card hidden">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="qCounter">Question 1 of 7</span>
+        <span id="qZone">Wealth Queen &#8596; Warrior Queen</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div id="qText" class="q-text"></div>
+    <div id="answers" class="answers"></div>
+    <div class="nav-back"><button id="backBtn">&#8592; Back</button></div>
+  </section>
+
+  <section id="result" class="card result-card hidden">
+    <p class="eyebrow">Your Wealth Queen Archetype</p>
+    <div class="rule"></div>
+    <div class="result-name" id="rName"></div>
+    <div class="result-tag" id="rTag"></div>
+
+    <div class="result-layout">
+      <nav class="result-nav">
+        <div class="nav-label">Your Queen</div>
+        <button class="nav-item active" data-panel="archetype">Your Archetype <span class="nav-dot">&#10022;</span></button>
+        <button class="nav-item" data-panel="essence">Your Essence <span class="nav-dot">&#10022;</span></button>
+        <button class="nav-item" data-panel="wealth">How You Build Your Wealth <span class="nav-dot">&#10022;</span></button>
+      </nav>
+      <div class="result-content">
+        <div class="panel active" id="panelArchetype">
+          <div class="result-img-wrap" id="rImgWrap"></div>
+        </div>
+        <div class="panel reading-panel" id="panelEssence">
+          <div class="panel-head" id="essenceHead"></div>
+          <div class="reading" id="rEssence"></div>
+        </div>
+        <div class="panel reading-panel" id="panelWealth">
+          <div class="panel-head">How You Build Your Wealth</div>
+          <div class="reading" id="rWealth"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="share-note" id="rShare"></div>
+    <p class="sig">I believe in you. To living our dreams. &#8212; Aurailia &#10022;</p>
+    <div class="result-foot"><button class="btn btn-ghost" id="retakeBtn">Take it again</button></div>
+  </section>
+
+</div>
+
+<script type="application/json" id="queenData">{"01": {"name": "The Crown Forger", "tagline": "She builds the throne, then takes it.", "file": "01-the-crown-forger.png", "essence": "You've never once waited to be picked. Somewhere early you figured out that nobody was coming to hand you anything, so you'd just build it yourself, and you did. You're the friend who says \"I'll figure it out\" and then actually does. You'd rather make the whole thing from scratch than ask for help and owe somebody. There's a quiet stubbornness in you that looks like independence but is really just you trusting your own hands more than anyone else's."}, "02": {"name": "The Throne Claimer", "tagline": "She says it, and it moves.", "file": "02-the-throne-claimer.png", "essence": "You have that thing. You walk in and people just sort of arrange themselves around you, and the wild part is you're not even trying. You've probably been told you're \"intimidating\" by people who really meant \"I wasn't ready for a woman who knows what she wants.\" You don't do hints. When you finally decide something, it's already done in your head, everyone else is just catching up to a call you made ten minutes ago."}, "03": {"name": "The Gilded Spark", "tagline": "She lights the fire others gather around.", "file": "03-the-gilded-spark.png", "essence": "You start things. A lot of things. You're the one with eleven ideas in the shower and a new plan by lunch, and yes, some of them die in a notes app, and that's fine. You can't help moving toward a new opening, it's just how you're wired, and when you light up about something, people feel it across the room and lean in. You've maybe been made to feel flaky for this. You're not flaky. You're a starter. Those are rare and the world runs on them."}, "04": {"name": "The Alchemist Queen", "tagline": "She turns what she touches into cashflow.", "file": "04-the-alchemist-queen.png", "essence": "You're the one who looks at a random mess and goes \"oh, I can make money with that.\" A skill, a hobby, a thing you learned by accident, you've got this knack for turning it into an offer while other people are still calling it a hobby. You get a little bored doing one thing forever, which you've probably beaten yourself up about, but it's actually the whole trick. You're not scattered. You're metabolizing everything you touch into gold and you do it fast."}, "05": {"name": "The Untamed Sovereign", "tagline": "She follows the fire and the money follows her.", "file": "05-the-untamed-sovereign.png", "essence": "You cannot be managed. People have tried. You're at your absolute best when you're chasing whatever's lighting you up right now, and you're miserable the second someone hands you a rigid plan and tells you to follow it. You've got a lot of fires going at once and that's not a problem to fix, it's your power source. You probably look chaotic from the outside and feel completely clear on the inside. That's not a contradiction. That's just you running hot."}, "06": {"name": "The Radiant Strategist", "tagline": "She sees the whole map and walks it in heels.", "file": "06-the-radiant-strategist.png", "essence": "You see the whole board. While everyone's reacting to what's in front of them, you're three moves ahead and a little annoyed you have to wait for them to catch up. You've got the rare combo of being able to feel into something AND build the actual plan for it. People underestimate you because you're warm, then they figure out you're also extremely sharp, usually right about the time you've already solved the thing they're still describing."}, "07": {"name": "The Honeyed Sovereign", "tagline": "She draws it in without chasing.", "file": "07-the-honeyed-sovereign.png", "essence": "You've noticed it your whole life. You stop trying so hard and the thing shows up. You force it and it runs. You're magnetic in a way that almost feels unfair to the people grinding next to you, but here's what they don't see, your \"ease\" is actually you being deeply tuned to what's a yes and refusing the rest. You're not lazy and you're not lucky. You're selective, and selective women get chosen back. When you're settled and lit up, things just come to you."}, "08": {"name": "The Steady Flame", "tagline": "She builds the kind of wealth that lasts.", "file": "08-the-steady-flame.png", "essence": "You're not flashy and you've made peace with that, mostly. You're the one who actually finishes, who shows up on the unglamorous Tuesday and does the thing again, and while everyone's chasing the viral moment you're quietly building something that won't collapse. You probably watch louder people blow up fast and wonder if you're behind. You're not behind. You're building the thing that's still standing after theirs burns out. Slow isn't the same as small."}, "09": {"name": "The Beloved Queen", "tagline": "People come, and they bring the wealth with them.", "file": "09-the-beloved-queen.png", "essence": "People just love you. Not in a fake-popular way, in a real way, where folks remember how you made them feel and keep coming back and bringing their friends. You build wealth through actual relationships, and you've maybe undervalued that because it doesn't feel like \"real\" business strategy. It absolutely is. Your warmth is not a soft skill. It's the whole engine. People buy from you and refer you because being around you feels good, and that is rarer than any funnel."}, "10": {"name": "The Oracle Queen", "tagline": "They pay for what only she can see.", "file": "10-the-oracle-queen.png", "essence": "You see things other people miss. You always have. You can read a person or a situation in about four seconds and you're usually right, and you've probably learned to keep quiet about it because being right that fast makes people uncomfortable. You don't need to be loud, you need to be asked, and when you are, what comes out of you is the thing nobody else could see. That's not a party trick. That's the most valuable thing you own."}, "11": {"name": "The Throne Advisor", "tagline": "She is the one they cannot do it without.", "file": "11-the-throne-advisor.png", "essence": "You're the power behind the throne and you secretly love it there. You're the one the leader calls before they make the big decision, the one whose opinion actually moves things, and you've figured out that real influence doesn't need a spotlight. You make other people better, sharper, more successful, and you can see exactly what they're missing the moment you walk in. You've maybe stayed too quiet about your own worth because you're used to making others shine. Time to get paid for the eye."}, "12": {"name": "The Beacon Sovereign", "tagline": "She shines, and they follow the light to her.", "file": "12-the-beacon-sovereign.png", "essence": "You're a lighthouse. People orient themselves by you without you asking them to, and you've probably felt the weight of that, like everyone's watching to see what you do next. They are. You're the one who goes first and shows it's possible, and others find their way by your light. This isn't ego, it's just true, you're visible in a way some people never are, and trying to dim yourself to be comfortable has never once worked. You were built to be seen."}, "13": {"name": "The Oracle of the Whole", "tagline": "She reads the whole room and rises with it.", "file": "13-the-oracle-of-the-whole.png", "essence": "You feel everything. You walk into a room and you instantly know what's off, who's pretending, where the real energy is, and it's exhausting and it's a superpower at the same time. You're rare, genuinely, most people don't experience the world the way you do. You're a mirror for whatever environment you're in, which means the rooms you choose are everything, the right ones and you bloom, the wrong ones and you wilt. You're not too sensitive. You're an instrument, and instruments need tuning, not toughening up."}}</script>
+<script type="application/json" id="typeMechData">{"Manifestor": "You're not built to wait for anyone. There's an initiating force in you that just moves, you get the urge and you go, and you've spent your life being told to slow down, check in, get permission first. You don't work like that and pretending you do has only ever made you tired and angry. When you want something you start it, often before you've explained it to a single soul, and that's not impulsive, that's how you're wired. The thing nobody told you: your power isn't in pushing harder. It's in moving first and then telling people what you're doing so they get out of your way instead of standing in it. You're here to start what others can't. The resistance you feel from people usually means you forgot to bring them along, not that you were wrong to move.", "Generator": "You have a yes and a no that live in your body, and they're almost never wrong. You feel it before you can explain it, a lift when something's right, a quiet dread when it's not, and every time you've talked yourself past that gut signal to do the \"logical\" thing, you've ended up drained and stuck in something you didn't even want. You're not built to chase. You're built to respond. The right things come to you and your body lights up, and that lit-up feeling is the whole compass. When you're doing work that genuinely satisfies you, you have endless energy for it and people feel that hum on you. When you're forcing it, you hit a wall fast. You were never lazy. You were just running on a no you kept overriding.", "Manifesting Generator": "You're not meant to do things in the \"right\" order. You skip steps, you jump ahead, you run three things at once and somehow they all work, even though it makes the tidy linear people around you nervous. Your body knows before your brain does, you get a yes or a no in your gut way before you can explain it, and every time you've overridden that to do the smart thing on paper, you stalled out and lost steam. And you're not a one-thing woman. You never will be. That's not a phase you're going to grow out of and organize away. It's the whole engine. You light up, you move, you're fast, and the second you make yourself small and singular to look more professional, you go dim.", "Projector": "You see people. You can look at someone and know exactly what they're doing wrong, what they're capable of, where they're leaking energy, and you're usually right with a speed that unsettles people. You're not here to grind out work like everyone else, your gift is the seeing, the guiding, the knowing how it should actually be run. Here's the part that's been confusing your whole life: it lands completely differently depending on whether you were asked. When someone invites your take, you're brilliant and they're grateful. When you offer it unasked, it bounces off or it stings, and you've felt that bounce enough times to start biting your tongue. You're not too much. You're just meant to be recognized and invited in, and when you are, what you see is worth a fortune. Your energy runs out faster than other people's, and that's by design, you're not built to go all day, you're built to see sharp and work in bursts.", "Reflector": "You feel everything in a room the second you walk in. Who's off, who's pretending, where the real energy is and where it's gone flat, and it's exhausting and it's a genuine superpower at the same time. You're rare, truly, most people do not experience the world the way you do. You're a mirror for whatever environment you're in, which is exactly why the rooms you choose matter more for you than for anyone else, the right one and you bloom and go luminous, the wrong one and you wilt and can't figure out why. You're also not the same woman every day, and you've probably beaten yourself up for that, trying to force a consistency that was never yours to have. You move with the moon, not the clock. Big things need time and a full cycle before they're clear. You're not flaky and you're not too sensitive. You're an instrument, and instruments get tuned, not toughened up."}</script>
+<script type="application/json" id="typeBizData">{"Manifestor": "Your money move is to start before you're ready and tell people as you go. You don't need the plan finished, the audience warmed up, or the perfect moment, those are stalling tactics dressed up as responsibility. You feel the pull, you make the thing, you announce it. The piece you'll want to skip is the announcing, and it's the one that saves you. When you move in silence and then spring a finished offer on people, you hit a wall of resistance that feels personal but isn't, it's just that nobody knew it was coming. Tell them first. \"Here's what I'm building.\" Watch the doors open instead of stick. Your wealth comes from being the one who goes first, so quit waiting for a green light that's never coming. You're the green light.", "Generator": "Your money comes from doing work that genuinely lights you up, and that's not a luxury, it's the actual strategy. When you're satisfied, you radiate it, and that hum is what draws people and sales to you without you chasing. So the move is to build your business around the offers your body says yes to and quietly kill the ones it doesn't, even the ones that look good on paper. Stop forcing yourself through launches and tactics that drain you, the drain leaks out everywhere and people feel it. Respond to what's in front of you, follow the yes, and let the satisfying work make you magnetic. The trap is grinding on something your gut already vetoed because you think you \"should.\" That should is costing you money. Do more of what lights you up. It's not indulgent, it's how you get paid.", "Manifesting Generator": "Your money move is simple and almost nobody does it. Feel the yes, tell your people what you're about to do, then move fast. Don't sit and plan a launch for six months, that's not you and it never worked. You feel it, you say it out loud to the people around you, you go. That telling-them part is the piece you'll want to skip, and it's the exact one that clears the road. When you bring your people along instead of springing it on them, the resistance melts and the doors open. Stop trying to cram yourself into a slow, tidy funnel built for a totally different kind of woman. Start fast, follow what lights you up, let the dead ideas die without the guilt. Your speed is the asset. Quit apologizing for it.", "Projector": "Your money is in your eye, not your hours, so stop trying to out-hustle people who are built to grind. You're not. One hour of you seeing clearly is worth more than a week of someone grinding blind, and you should price from that, not from time. Your move is to get recognized and invited, which means making your gift visible enough that the right people come asking. Stop giving away the sharp read for free in DMs and comments while waiting to feel \"expert enough\" to charge. You're already there. Build the offer where people come to be seen by you, and let your reputation do the inviting. The trap is burning yourself out copying a busy, always-on hustle that drains you in half the time it takes others. You're not here to do more. You're here to see what they can't, and charge like it.", "Reflector": "Your wealth depends on your environment more than anyone's, so the most important business decision you make is which rooms, clients, and communities you say yes to. The right ecosystem and you turn wise, magnetic, and clear. The wrong one drains you dry and you'll blame yourself instead of the room. So be ruthlessly picky, your sensitivity to a space is data, not weakness. Your move is to read what a whole community actually needs before they can name it, and reflect it back, that's an offer almost no one else can make. And give the big decisions time. A full cycle before you commit to the program, the partnership, the rebrand. The trap is forcing yourself onto everyone else's fast, fixed, do-it-now timeline and feeling broken when it doesn't fit. It was never your timeline. Move with your own rhythm and let your clarity be the thing people pay for."}</script>
+<script type="application/json" id="profileData">{"1/3": "You need to know your stuff. Like, actually know it, down to the foundation, because you can feel when you're standing on something shaky and it makes you deeply uncomfortable to wing it. People think you're slow to launch. You're not slow, you're building a floor solid enough to stand on, and once it's there nobody can knock you off it. The other half of you learns the hard way, by trying things and watching them not work. You've had a lot of \"failures\" that weren't failures at all, they were you finding out what doesn't work so you'd know what does. You're not behind for all the trial and error. That mess is your research, and it's why your advice actually holds up when other people's falls apart. You earn authority the real way. Lived, tested, proven on yourself first.", "1/4": "You need solid ground under you, you have to truly know a thing before you'll feel safe putting it out there, and that's not insecurity, that's you refusing to fake it. Once you know it cold, you're unshakeable. And here's where your money actually comes from: the people who already know you. Not cold strangers, not viral reach, your network, the warm circle of folks who've watched you and trust you. You build through relationships and reputation that travels person to person. So your whole game is to go deep enough to genuinely know your thing, then let it move through the people who already love you. The mistake is hiding in the research forever, or trying to grow through strangers when your gold is sitting right there in the people who'd vouch for you in a heartbeat.", "2/4": "You're gifted at things you never even studied. It comes easy to you in a way that almost feels unfair, and you genuinely need your space, your cave, your room to do your thing without being watched. You don't love being put on the spot and you shouldn't be. Here's the catch. Your gift isn't something you go shout about in the street. It's something people call out of you. They see it before you do and they come knocking. And your money comes the same way, through your people, the warm ones who already know you, not cold strangers you have to convince. So you live in a quiet tension. You need to disappear to do the genius work, and you need the right people close enough to pull it out of you. The work is letting them in, then retreating to do the magic in private. Protect your cave, but leave the door unlocked for the ones who see you.", "2/5": "You're gifted at things you never studied, it comes easy, and you need your alone time fiercely, you do your best work when no one's watching and you resent being put on the spot. But here's the thing that's followed you your whole life: people project onto you. They decide who you are before they've met you, they expect you to save the day, to have the answer, to be the one. Sometimes that reputation is bigger than anything you said about yourself, and it's a strange power, because when you show up and deliver, you're magnetic and in demand. The trick is you have to be a little careful what people expect of you, because the wrong expectation sticks just as hard as the right one. Your gift plus your reputation is a serious combination. People come pre-sold on you. Let them, and make sure the thing they're pre-sold on is the thing you actually want to be known for.", "3/5": "You learn by doing, which is a polite way of saying you learn by crashing into things and finding out the hard way. You've tried a lot, dropped a lot, been called a quitter by people who didn't get that the trying was the point. Every dead end taught you something nobody who plays it safe will ever know. So your advice is battle-tested, it works, because you personally found out what doesn't. And on top of that, people project onto you. They expect you to come through, to fix it, to be the one with the answer, and your reputation tends to arrive in the room before you do. That's a powerful combo when you aim it: you've actually lived the thing AND people already believe you can deliver it. The trap is letting the trial-and-error make you feel like a mess, or buckling under expectations you never agreed to. You're not a mess. You're the one who's actually been through it, and that's why they're right to expect a lot.", "3/6": "The first chunk of your life has been one big experiment, and not a tidy one. You've tried things, crashed, switched, started over, and been made to feel flaky for all of it. None of it was wasted. You were finding out what's real by personally running into what isn't, and that lived knowledge is worth more than anything you could've read. There's another layer to you though: you're here to become the proof. The role model. The one who lives it and then shows others it's possible. Earlier on you're in the thick of trial and error, but as you go you climb up onto a kind of rooftop where you can see the whole thing, and people start watching how you live as much as what you say. So your wealth grows as you stop hiding the messy chapters and start letting them be the credential. You went through it. Now you're the example that it can be done. That's the whole offer.", "4/1": "You're built on solid ground, you need to truly know your thing before you'll put it out, and once you do, you're immovable, nobody's talking you out of what you know in your bones. And your wealth moves through people, specifically the ones who already know and trust you. Your network is not a nice-to-have, it's the actual engine. Opportunities, clients, the big breaks, they come through warm hands, through someone who knows you saying your name in the right room. This is one of the most stable setups there is: deep knowledge plus loyal relationships. You're not here to chase strangers on the internet. You're here to know your thing cold and let your people carry it outward. The mistake is grinding for cold reach while neglecting the circle that would move mountains for you. Tend those relationships like the asset they are, because they are the asset.", "4/6": "Your wealth comes through your people, full stop. The warm ones, the ones who already know you and trust you, your network is where the money actually lives, and you feel a little wrong about that sometimes like it should be more \"professional\" and less personal. It shouldn't. That's your design and it's a rich one. The other thing about you is you're becoming the role model, the one others watch and follow, the proof that it can be done. So your two superpowers stack: deep real relationships, plus a life people want to model. As you go, you stop performing and start simply living it well, and people are drawn to that more than any pitch. Your money grows through trusted connection and through being the example. The trap is reaching cold and wide when your whole gift is depth and trust, or hiding your life when your life is the thing that magnetizes people. Stay close to your people. Let them watch you live it.", "5/1": "People project onto you, hard. They look at you and see the rescuer, the expert, the one who's going to fix it, and this has been happening your whole life whether you asked for it or not. Your reputation shows up in the room before you do. When you deliver, you're magnetic and in serious demand. The thing that makes you able to actually carry all that expectation is the other half of you: you genuinely know your stuff, deep down to the foundation. You don't just have the reputation, you have the goods underneath it. That's rare. Plenty of people get projected on and crumble because there's nothing solid under the image. Not you. The careful part is managing what people expect, because the wrong projection sticks as hard as the right one, and you can get pulled into being everyone's savior until you're drained. Aim that reputation on purpose. Be known for the thing you actually want to deliver, and make sure there's always real substance under the shine. There is. That's why it works.", "5/2": "Here's your particular tension. People project onto you constantly, they expect you to be the one, the savior, the answer, your reputation arrives before you do. And at the same time, you're a natural who genuinely wants to be left alone to do her thing in peace. So you've got the world knocking on your door expecting magic, and a deep part of you that wants to pull the curtains and disappear. Both are true and both are real. When you're called out for the right thing, by the right people, you deliver something that looks effortless because it kind of is, it's your natural gift. But you cannot let just anyone summon you, the wrong expectations will drain you dry and you'll resent it. Your wealth comes from being selectively, powerfully available. Let your reputation do the work of drawing people in, then choose who actually gets access. You're not a vending machine. You're a natural the right people get to call on, on your terms.", "6/2": "You're here to be the proof. Not by preaching it, by living it, people watch how you do your life and they follow that more than anything you could say. There's a weight to that you've probably felt, like eyes are on you, like you're being watched to see what you do next. You are, and it's not a burden once you aim it, it's your whole magnetism. Underneath the role-model thing is a natural gift, something that comes easy to you that you never had to grind for, and you need your space to let it breathe, you do your best when you're not being poked and performed at. So you lead by example and you protect your cave, and both are right. Your wealth grows as you stop hiding and let your life be the demonstration, while keeping enough privacy that the gift stays yours. People want what you have because of how you live. Live it well and let them see, then close the door and refill.", "6/3": "You're becoming the one others watch and model, the living proof that it can be done. And you earned that the hard way, through a whole lot of trial and error that probably made you feel, at times, like a walking disaster. You're not a disaster. You went through the fire personally so you could stand on the rooftop later and actually know what you're talking about. That combination is powerful and rare: you've lived the mess AND you're becoming the example, which means when you show people the way, you're not selling theory, you're showing them a path you personally walked, scraped knees and all. Your wealth comes from owning the whole journey, the crashes included, and letting your real lived life be the proof. The trap is hiding the messy chapters to look more polished, when those exact chapters are what make people trust you. You're believable precisely because you didn't fake it. Show them the climb."}</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "embodyWealthQueenResult_v2";
+
+  var queens = JSON.parse(document.getElementById("queenData").textContent);
+  var typeMech = JSON.parse(document.getElementById("typeMechData").textContent);
+  var typeBiz = JSON.parse(document.getElementById("typeBizData").textContent);
+  var profileText = JSON.parse(document.getElementById("profileData").textContent);
+
+  var types = ["Manifestor", "Generator", "Manifesting Generator", "Projector", "Reflector"];
+  var profiles = ["1/3", "1/4", "2/4", "2/5", "3/5", "3/6", "4/6", "4/1", "5/1", "5/2", "6/2", "6/3"];
+
+  var questions = [
+    { q: "You've got a free afternoon and no obligations. What actually happens?", a: [
+      { t: "I follow whatever I feel pulled toward and the day unfolds", w: "wealth" },
+      { t: "I start a project I've been itching to get going", w: "warrior" },
+      { t: "I dive into something I've been curious about", w: "blend" },
+      { t: "I text people I've been meaning to connect with", w: "blend" } ] },
+    { q: "A big opportunity lands but it's not quite ready. What's your move?", a: [
+      { t: "I wait for the right moment, I can feel when it's time", w: "wealth" },
+      { t: "I jump in now and figure out the rest as I go", w: "warrior" },
+      { t: "I get excited and start building it into something", w: "blend" },
+      { t: "I bring in the right people to make it real", w: "blend" } ] },
+    { q: "Be honest. What's your actual relationship with money right now?", a: [
+      { t: "It comes when I'm in my flow, it's tied to how I feel", w: "wealth" },
+      { t: "I make it happen, I go get it", w: "warrior" },
+      { t: "It shows up when I'm lit up and doing my thing", w: "blend" },
+      { t: "It comes through the people and trust I've built", w: "blend" } ] },
+    { q: "Left to your own rhythm, how do you actually get things done?", a: [
+      { t: "Slowly, in waves, when the energy's right", w: "wealth" },
+      { t: "Hard and fast, head down till it's done", w: "warrior" },
+      { t: "In bursts, jumping between things that excite me", w: "blend" },
+      { t: "Alongside other people, it flows better together", w: "blend" } ] },
+    { q: "What does success actually feel like to you?", a: [
+      { t: "Ease. Things flowing to me without forcing", w: "wealth" },
+      { t: "Power. Building something that's mine", w: "warrior" },
+      { t: "Freedom. Doing what lights me up on my terms", w: "blend" },
+      { t: "Being known and trusted by my people", w: "blend" } ] },
+    { q: "When it's time to put yourself out there, you:", a: [
+      { t: "Trust the right people will find you", w: "wealth" },
+      { t: "Step up and make sure you're seen", w: "warrior" },
+      { t: "Share when something's genuinely lighting you up", w: "blend" },
+      { t: "Lean on the people who already know and vouch for me", w: "blend" } ] },
+    { q: "What slows you down more than you'd like to admit?", a: [
+      { t: "Forcing it when I should be letting it come", w: "wealth" },
+      { t: "Waiting, when I'd rather just move", w: "warrior" },
+      { t: "Second-guessing whether I'm doing enough", w: "blend" },
+      { t: "Doing it all myself instead of leaning on people", w: "warrior" } ] }
+  ];
+
+  function routeQueen(type, profile, tally) {
+    var leanWarrior = tally.warrior > tally.wealth;
+    var leanWealth = tally.wealth > tally.warrior;
+    if (type === "Reflector") return "13";
+    if (type === "Manifestor") {
+      if (profile === "5/1" || profile === "5/2") return "02";
+      if (profile === "4/6" || profile === "6/2" || profile === "6/3") return "03";
+      if (leanWealth) return "03";
+      return "01";
+    }
+    if (type === "Manifesting Generator") {
+      if (profile === "1/3" || profile === "3/5" || profile === "3/6") return "05";
+      if (profile === "5/1" || profile === "5/2" || profile === "6/2" || profile === "6/3") return "06";
+      if (leanWarrior) return "05";
+      if (leanWealth) return "06";
+      return "04";
+    }
+    if (type === "Generator") {
+      if (profile === "1/3" || profile === "1/4" || profile === "3/5" || profile === "3/6") return "08";
+      if (profile === "2/4" || profile === "2/5" || profile === "5/1" || profile === "5/2") return "07";
+      if (profile === "4/6" || profile === "4/1" || profile === "6/2" || profile === "6/3") return "09";
+      return "07";
+    }
+    if (type === "Projector") {
+      if (profile === "1/3" || profile === "1/4" || profile === "2/4" || profile === "2/5") return "10";
+      if (profile === "3/5" || profile === "3/6" || profile === "4/6" || profile === "4/1" || profile === "5/1") return "11";
+      if (profile === "5/2" || profile === "6/2" || profile === "6/3") return "12";
+      return "10";
+    }
+    return "07";
+  }
+
+  var state = { type: null, profile: null, current: 0, answers: [] };
+
+  var el = {
+    intro: document.getElementById("intro"),
+    hd: document.getElementById("hd"),
+    quiz: document.getElementById("quiz"),
+    result: document.getElementById("result"),
+    stage: document.getElementById("stage"),
+    bgImage: document.getElementById("bgImage"),
+    bgWash: document.getElementById("bgWash"),
+    startBtn: document.getElementById("startBtn"),
+    typeGrid: document.getElementById("typeGrid"),
+    profileGrid: document.getElementById("profileGrid"),
+    hdNext: document.getElementById("hdNext"),
+    qCounter: document.getElementById("qCounter"),
+    progressFill: document.getElementById("progressFill"),
+    qText: document.getElementById("qText"),
+    answers: document.getElementById("answers"),
+    backBtn: document.getElementById("backBtn"),
+    rName: document.getElementById("rName"),
+    rTag: document.getElementById("rTag"),
+    rImgWrap: document.getElementById("rImgWrap"),
+    rEssence: document.getElementById("rEssence"),
+    rWealth: document.getElementById("rWealth"),
+    essenceHead: document.getElementById("essenceHead"),
+    navItems: document.querySelectorAll(".result-nav .nav-item"),
+    panelArchetype: document.getElementById("panelArchetype"),
+    panelEssence: document.getElementById("panelEssence"),
+    panelWealth: document.getElementById("panelWealth"),
+    rShare: document.getElementById("rShare"),
+    retakeBtn: document.getElementById("retakeBtn")
+  };
+
+  function setBg(on) {
+    if (on) { el.bgImage.classList.add("show"); el.bgWash.classList.add("show"); el.stage.classList.add("wide"); }
+    else { el.bgImage.classList.remove("show"); el.bgWash.classList.remove("show"); el.stage.classList.remove("wide"); }
+  }
+
+  function show(section, withBg) {
+    el.intro.classList.add("hidden");
+    el.hd.classList.add("hidden");
+    el.quiz.classList.add("hidden");
+    el.result.classList.add("hidden");
+    section.classList.remove("hidden");
+    section.classList.remove("fade");
+    void section.offsetWidth;
+    section.classList.add("fade");
+    setBg(!!withBg);
+    window.scrollTo(0, 0);
+  }
+
+  for (var i = 0; i < types.length; i++) {
+    (function (t) {
+      var c = document.createElement("button");
+      c.className = "chip";
+      c.textContent = t;
+      c.addEventListener("click", function () {
+        state.type = t;
+        var all = el.typeGrid.querySelectorAll(".chip");
+        for (var k = 0; k < all.length; k++) all[k].classList.remove("selected");
+        c.classList.add("selected");
+        checkHd();
+      });
+      el.typeGrid.appendChild(c);
+    })(types[i]);
+  }
+
+  for (var p = 0; p < profiles.length; p++) {
+    (function (pr) {
+      var c = document.createElement("button");
+      c.className = "chip";
+      c.textContent = pr;
+      c.addEventListener("click", function () {
+        state.profile = pr;
+        var all = el.profileGrid.querySelectorAll(".chip");
+        for (var k = 0; k < all.length; k++) all[k].classList.remove("selected");
+        c.classList.add("selected");
+        checkHd();
+      });
+      el.profileGrid.appendChild(c);
+    })(profiles[p]);
+  }
+
+  function checkHd() { el.hdNext.disabled = !(state.type && state.profile); }
+
+  function renderQuestion() {
+    var qi = state.current;
+    var q = questions[qi];
+    el.qCounter.textContent = "Question " + (qi + 1) + " of " + questions.length;
+    el.progressFill.style.width = (qi / questions.length * 100) + "%";
+    el.qText.textContent = q.q;
+    while (el.answers.firstChild) el.answers.removeChild(el.answers.firstChild);
+    for (var a = 0; a < q.a.length; a++) {
+      (function (ans) {
+        var b = document.createElement("button");
+        b.className = "answer";
+        b.textContent = ans.t;
+        b.addEventListener("click", function () {
+          state.answers[qi] = ans.w;
+          if (qi < questions.length - 1) { state.current++; renderQuestion(); }
+          else { finish(); }
+        });
+        el.answers.appendChild(b);
+      })(q.a[a]);
+    }
+    el.backBtn.style.visibility = qi === 0 ? "hidden" : "visible";
+  }
+
+  function finish() {
+    var tally = { wealth: 0, warrior: 0, blend: 0 };
+    for (var i = 0; i < state.answers.length; i++) {
+      var w = state.answers[i];
+      if (w === "wealth") tally.wealth++;
+      else if (w === "warrior") tally.warrior++;
+      else tally.blend++;
+    }
+    var id = routeQueen(state.type, state.profile, tally);
+    renderResult(id, state.type, state.profile);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: id, type: state.type, profile: state.profile }));
+    } catch (e) {}
+    show(el.result, true);
+  }
+
+  function addPara(parent, text) {
+    var pEl = document.createElement("p");
+    pEl.textContent = text;
+    parent.appendChild(pEl);
+  }
+
+  function setPanel(which) {
+    el.panelArchetype.classList.toggle("active", which === "archetype");
+    el.panelEssence.classList.toggle("active", which === "essence");
+    el.panelWealth.classList.toggle("active", which === "wealth");
+    for (var i = 0; i < el.navItems.length; i++) {
+      el.navItems[i].classList.toggle("active", el.navItems[i].getAttribute("data-panel") === which);
+    }
+  }
+
+  function renderResult(id, type, profile) {
+    var queen = queens[id];
+    el.rName.textContent = queen.name;
+    el.rTag.textContent = queen.tagline;
+
+    while (el.rImgWrap.firstChild) el.rImgWrap.removeChild(el.rImgWrap.firstChild);
+    var img = document.createElement("img");
+    img.className = "result-img";
+    img.alt = queen.name;
+    img.src = "images/" + queen.file;
+    img.addEventListener("error", function () {
+      if (img.parentNode) el.rImgWrap.removeChild(img);
+      var fb = document.createElement("div");
+      fb.className = "img-fallback";
+      fb.textContent = queen.name + " \u2014 her card is on its way.";
+      el.rImgWrap.appendChild(fb);
+    });
+    el.rImgWrap.appendChild(img);
+
+    // Essence panel head names the Queen, then her layered reading
+    el.essenceHead.textContent = "The Essence of " + queen.name;
+    while (el.rEssence.firstChild) el.rEssence.removeChild(el.rEssence.firstChild);
+    addPara(el.rEssence, queen.essence);
+    if (typeMech[type]) addPara(el.rEssence, typeMech[type]);
+    if (profileText[profile]) addPara(el.rEssence, profileText[profile]);
+
+    // Wealth panel = Type business move
+    while (el.rWealth.firstChild) el.rWealth.removeChild(el.rWealth.firstChild);
+    if (typeBiz[type]) addPara(el.rWealth, typeBiz[type]);
+
+    // default to the card
+    setPanel("archetype");
+
+    el.rShare.textContent = "Screenshot your Queen and share her in the Inner Circle. Let's see who's rising.";
+  }
+
+  el.startBtn.addEventListener("click", function () { show(el.hd, false); });
+  for (var n = 0; n < el.navItems.length; n++) {
+    (function (item) {
+      item.addEventListener("click", function () { setPanel(item.getAttribute("data-panel")); });
+    })(el.navItems[n]);
+  }
+  el.hdNext.addEventListener("click", function () { state.current = 0; state.answers = []; show(el.quiz, false); renderQuestion(); });
+  el.backBtn.addEventListener("click", function () { if (state.current > 0) { state.current--; renderQuestion(); } });
+  el.retakeBtn.addEventListener("click", function () {
+    state.type = null; state.profile = null; state.current = 0; state.answers = [];
+    var allT = el.typeGrid.querySelectorAll(".chip");
+    for (var i = 0; i < allT.length; i++) allT[i].classList.remove("selected");
+    var allP = el.profileGrid.querySelectorAll(".chip");
+    for (var j = 0; j < allP.length; j++) allP[j].classList.remove("selected");
+    el.hdNext.disabled = true;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    show(el.intro, false);
+  });
+
+  function restore() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw);
+      if (saved && saved.id && queens[saved.id] && saved.type && saved.profile) {
+        renderResult(saved.id, saved.type, saved.profile);
+        show(el.result, true);
+      }
+    } catch (e) {}
+  }
+
+  restore();
+})();
+</script>
+</body>
+</html>

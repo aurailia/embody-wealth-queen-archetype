@@ -452,6 +452,7 @@
     "Reflector": "You move with the moon, not the clock."
   };
   var shareLinks = JSON.parse(document.getElementById("shareLinks").textContent);
+  var COMMUNITY_URL = "https://www.skool.com/embody-wealth?c=caae7fdd0f8d43d298c7a3ebc55675a1&s=newest&fl=";
 
   var types = ["Manifestor", "Generator", "Manifesting Generator", "Projector", "Reflector"];
   var profiles = ["1/3", "1/4", "2/4", "2/5", "3/5", "3/6", "4/6", "4/1", "5/1", "5/2", "6/2", "6/3"];
@@ -876,7 +877,20 @@
       ip.textContent = introLines[li].t;
       introBody.appendChild(ip);
     }
-    introHead.addEventListener("click", function () { introDay.classList.toggle("open"); });
+    introHead.addEventListener("click", function () {
+      var wasOpen = introDay.classList.contains("open");
+      var allDays = el.rPractice.querySelectorAll(".day");
+      for (var k = 0; k < allDays.length; k++) allDays[k].classList.remove("open");
+      if (!wasOpen) {
+        introDay.classList.add("open");
+        window.requestAnimationFrame(function () {
+          var top = introDay.getBoundingClientRect().top + window.pageYOffset - 90;
+          window.scrollTo({ top: top, behavior: "smooth" });
+        });
+      } else {
+        introDay.classList.remove("open");
+      }
+    });
     introDay.appendChild(introHead);
     introDay.appendChild(introBody);
     el.practiceIntro.appendChild(introDay);
@@ -929,15 +943,31 @@
           a.textContent = "Open today's post \u2192";
           share.appendChild(a);
         } else {
-          var plain = document.createElement("p");
-          plain.className = "share-plain";
-          plain.textContent = "Post it in the Embody Wealth community.";
-          share.appendChild(plain);
+          var a2 = document.createElement("a");
+          a2.href = COMMUNITY_URL;
+          a2.target = "_blank";
+          a2.rel = "noopener";
+          a2.textContent = "Post it in the Embody Wealth community \u2192";
+          share.appendChild(a2);
         }
         body.appendChild(share);
 
         head.addEventListener("click", function () {
-          dayEl.classList.toggle("open");
+          var wasOpen = dayEl.classList.contains("open");
+          // close any other open day (one open at a time)
+          var allDays = el.rPractice.querySelectorAll(".day");
+          for (var k = 0; k < allDays.length; k++) allDays[k].classList.remove("open");
+          // also close the intro row
+          var introOpen = el.practiceIntro.querySelector(".day.open");
+          if (introOpen) introOpen.classList.remove("open");
+          if (!wasOpen) {
+            dayEl.classList.add("open");
+            // scroll the opened day up into view
+            window.requestAnimationFrame(function () {
+              var top = dayEl.getBoundingClientRect().top + window.pageYOffset - 90;
+              window.scrollTo({ top: top, behavior: "smooth" });
+            });
+          }
         });
 
         dayEl.appendChild(head);
@@ -950,7 +980,19 @@
   el.startBtn.addEventListener("click", function () { show(el.hd, false); });
   for (var n = 0; n < el.navItems.length; n++) {
     (function (item) {
-      item.addEventListener("click", function () { setPanel(item.getAttribute("data-panel")); });
+      item.addEventListener("click", function () {
+        setPanel(item.getAttribute("data-panel"));
+        // scroll back to the top of the reading area
+        window.requestAnimationFrame(function () {
+          var layout = document.querySelector(".result-layout");
+          if (layout) {
+            var top = layout.getBoundingClientRect().top + window.pageYOffset - 20;
+            window.scrollTo({ top: top, behavior: "smooth" });
+          } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        });
+      });
     })(el.navItems[n]);
   }
   el.hdNext.addEventListener("click", function () { state.current = 0; state.answers = []; show(el.quiz, false); renderQuestion(); });
